@@ -1,0 +1,26 @@
+.wpba {
+	width: 100%;
+	height: 100%;
+	li {
+		cursor: pointer;
+		margin-right: 5px;
+		.wpba-edit-attachment {
+			position: absolute;
+			margin: 10px 0 0 15px;
+			display: none;
+		}
+		&:hover > .wpba-edit-attachment {
+			display: inline-block;
+		}
+	}
+	.wpba-saving {
+		height: 24px;
+		line-height: 24px;
+		margin-left: 10px;
+		span { height: 100%; display: inline-block; }
+		img { margin-bottom: -3px; }
+	}
+	.wpba-edit-attachment {
+		a { text-decoration: none; }
+	}
+} // .wpba
