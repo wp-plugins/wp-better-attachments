@@ -39,8 +39,14 @@ None so far... If you have any issues please submit an [issue](https://github.co
 = 1.0.1 =
 Initial Release
 
+= 1.0.1 =
+Added support for other file types
+
 
 == Upgrade Notice ==
 
 = 1.0.1 =
 Initial Release
+
+= 1.0.1 =
+Added support for other file types
