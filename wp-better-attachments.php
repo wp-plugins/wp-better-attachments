@@ -1,23 +1,21 @@
 <?php
 /**
  * @package WP_Better_Attachments
- * @version 1.0.0
+ * @version 1.0.1
  */
 /*
 Plugin Name: WP Better Attachments
 Plugin URI: http://dholloran.github.io/wp-better-attachments
 Description: Better Wordpress Attachments
 Author: Dan Holloran
-Version: 1.0.0
+Version: 1.0.1
 Author URI: http://danholloran.com/
 */
 
-define( 'WPBA_VERSION', '1.0.0' );
+define( 'WPBA_VERSION', '1.0.1' );
 define( 'WPBA_LANG', 'wpba' );
 
 function wp_test(){
-	global $post;
-// pp($post);
 }
 add_action('admin_enqueue_scripts', 'wp_test');
 
@@ -34,6 +32,7 @@ register_uninstall_hook( __FILE__, array( 'WPBA_Init', 'on_uninstall' ) );
 * Required Classes
 */
 require_once "classes/class.wp-better-attachments.php";
+require_once "classes/class.wpba-meta-box.php";
 require_once "classes/class.wpba-ajax.php";
 
 /**
