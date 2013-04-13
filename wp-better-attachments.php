@@ -1,18 +1,18 @@
 <?php
 /**
  * @package WP_Better_Attachments
- * @version 1.0.1
+ * @version 1.1.0
  */
 /*
 Plugin Name: WP Better Attachments
 Plugin URI: http://dholloran.github.io/wp-better-attachments
 Description: Better Wordpress Attachments
 Author: Dan Holloran
-Version: 1.0.1
+Version: 1.1.0
 Author URI: http://danholloran.com/
 */
 
-define( 'WPBA_VERSION', '1.0.1' );
+define( 'WPBA_VERSION', '1.1.0' );
 define( 'WPBA_LANG', 'wpba' );
 
 function wp_test(){
@@ -47,11 +47,6 @@ if ( floatval($wp_version) >= 3.5 ) {
 	add_action('media_buttons_context', 'add_form_button');
 }
 function add_form_button($context){
-		$is_post_edit_page = in_array(RG_CURRENT_PAGE, array('post.php', 'page.php', 'page-new.php', 'post-new.php'));
-		if(!$is_post_edit_page)
-				return $context;
-
-		$image_btn = GFCommon::get_base_url() . "/images/form-button.png";
-		$out = '<a class="button wpba-attachments-button wpba-form-attachments-button" id="wpba_form_attachments_button" href="#">Add Attachments</a>';
-		return $context . $out;
+	$out = '<a class="button wpba-attachments-button wpba-form-attachments-button" id="wpba_form_attachments_button" href="#">Add Attachments</a>';
+	return $context . $out;
 }
