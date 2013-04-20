@@ -32,8 +32,8 @@ jQuery(function($){
 					resp = $.parseJSON(data);
 					if ( resp ) {
 						sortableImageElem.append( resp.image );
-						updateSortOrder(sortableImageElem);
-						resetClickHandlers();
+						wpba.updateSortOrder(sortableImageElem);
+						wpba.resetClickHandlers();
 					}
 				});
 

@@ -1,4 +1,6 @@
 // @codekit-prepend wpba-attachment.js
+// @codekit-prepend vendor/jquery.imgareaselect.pack.js
+// @codekit-prepend wpba-crop-3.5.js
 jQuery(function($){
 	$(window).load(function(){
 		var file_frame,
@@ -40,8 +42,8 @@ jQuery(function($){
 					resp = $.parseJSON(data);
 					if ( resp ) {
 						$( "#wpba_image_sortable" ).append( resp.image );
-						updateSortOrder($( "#wpba_image_sortable" ));
-						resetClickHandlers();
+						wpba.updateSortOrder($( "#wpba_image_sortable" ));
+						wpba.resetClickHandlers();
 					}
 
 				});
