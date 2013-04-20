@@ -1,7 +1,13 @@
+var wpba = {};
+
+/**
+* Variables
+*/
+
 /**
 * Updates Sort Order
 */
-function updateSortOrder(elem) {
+wpba.updateSortOrder = function(elem) {
 	var $ = jQuery,
 			sortLi = elem.find('li'),
 			sortOrder = [],
@@ -25,14 +31,14 @@ function updateSortOrder(elem) {
 /**
 * Image Sorting Click Handler
 */
-function updateSortOrderClickHandler() {
+wpba.updateSortOrderClickHandler =  function() {
 	var $ = jQuery,
 			sortableImageElem = $( "#wpba_image_sortable" )
 	;
 	sortableImageElem.sortable();
 	sortableImageElem.disableSelection();
 	sortableImageElem.on( "sortupdate", function( e, ui ) {
-		updateSortOrder( sortableImageElem );
+		wpba.updateSortOrder( sortableImageElem );
 	});
 }
 
@@ -40,10 +46,10 @@ function updateSortOrderClickHandler() {
 /**
 * Unattachs an attachment
 */
-function unattachAttachment(that) {
+wpba.unattachAttachment = function(that) {
 	var $ = jQuery,
 			sortableImageElem = $( "#wpba_image_sortable" ),
-			linkParent = that.parent('li').parent('ul'),
+			linkParent = that.parent('li').parent('ul').parent('div'),
 			attachmentId = linkParent.data('id'),
 			ajaxData = {
 				'action' : 'wpba_unattach_attachment',
@@ -51,12 +57,13 @@ function unattachAttachment(that) {
 			},
 			saveElem = $('.wpba-saving')
 	;
+	console.log(linkParent);
 	saveElem.removeClass('hide');
 	$.post(ajaxurl, ajaxData, function(data) {
 		var resp = $.parseJSON(data);
 		if (resp) {
 			linkParent.parent('li').remove();
-			updateSortOrder( sortableImageElem );
+			wpba.updateSortOrder( sortableImageElem );
 		}
 	});
 }
@@ -65,10 +72,10 @@ function unattachAttachment(that) {
 /**
 * Unattach Image Click Handler
 */
-function unattachAttachmentClickHandler() {
+wpba.unattachAttachmentClickHandler = function() {
 	$ = jQuery;
 	$('.wpba-unattach').on('click', function(e){
-		unattachAttachment($(this));
+		wpba.unattachAttachment($(this));
 		e.preventDefault();
 		return false;
 	});
@@ -78,7 +85,7 @@ function unattachAttachmentClickHandler() {
 /**
 * Unattach Library Click Handler
 */
-function unattachAttachmentLibraryClickHandler() {
+wpba.unattachLibraryAttachmentClickHandler = function() {
 	$ = jQuery;
 	$('.wpba-unattach-library').on('click', function(e){
 		var that = $(this),
@@ -105,14 +112,14 @@ function unattachAttachmentLibraryClickHandler() {
 /**
 * Deletes and attachment
 */
-function deleteAttachment(that) {
+wpba.deleteAttachment = function(that) {
 	var $ = jQuery,
 			makeSure = confirm("Are you sure you want to permanently delete this attachment? This will permanently remove the attachment from the media gallery!!"),
 			saveElem = $('.wpba-saving'),
 			sortableImageElem = $( "#wpba_image_sortable" )
 	;
 	if ( makeSure ) {
-		var linkParent = that.parent('li').parent('ul'),
+		var linkParent = that.parent('li').parent('ul').parent('div'),
 				attachmentId = linkParent.data('id'),
 				ajaxData = {
 					'action' : 'wpba_delete_attachment',
@@ -125,7 +132,7 @@ function deleteAttachment(that) {
 			var resp = $.parseJSON(data);
 			if (resp) {
 				linkParent.parent('li').remove();
-				updateSortOrder( sortableImageElem );
+				wpba.updateSortOrder( sortableImageElem );
 			}
 			saveElem.addClass('hide');
 		});
@@ -136,10 +143,10 @@ function deleteAttachment(that) {
 /**
 * Delete Attachment Click Handler
 */
-function deleteAttachmentClickHandler(){
+wpba.deleteAttachmentClickHandler = function(){
 	$ = jQuery;
 	$('.wpba-delete').on('click', function(e){
-		deleteAttachment($(this));
+		wpba.deleteAttachment($(this));
 		e.preventDefault();
 		return false;
 	});
@@ -149,7 +156,7 @@ function deleteAttachmentClickHandler(){
 /**
 * Refresh attachments
 */
-function refreshAttachments(id) {
+wpba.refreshAttachments = function(id) {
 	var $ = jQuery,
 			ajaxData = {
 				action: 'wpba_refresh_attachments',
@@ -159,7 +166,7 @@ function refreshAttachments(id) {
 	;
 	$.getJSON(ajaxurl, ajaxData, function(resp){
 		sortableImageElem.empty().append(resp);
-		resetClickHandlers();
+		wpba.resetClickHandlers();
 	});
 
 	return false;
@@ -169,13 +176,13 @@ function refreshAttachments(id) {
 /**
 * Edit Modal Click Handler
 */
-function editModalClickHandler() {
+wpba.editModalClickHandler = function() {
 	$ = jQuery;
 	if($('#wpba_edit_screen').length > 0 ) {
 		// Edit Modal Open
 		$('.wpba-edit').on('click',function(e){
 			var that = $(this);
-			attid = showEditScreenModal(that);
+			attid = wpba.showEditScreenModal(that);
 			e.preventDefault();
 			return false;
 		});
@@ -183,7 +190,7 @@ function editModalClickHandler() {
 		// Edit Modal Close
 		$('#wpba_edit_screen_close').on('click', function(e){
 			var that = $(this);
-			refreshAttachments(attid);
+			wpba.refreshAttachments(attid);
 			$('#wpba_edit_screen').hide();
 			e.preventDefault();
 			return false;
@@ -196,7 +203,7 @@ function editModalClickHandler() {
 /**
 * Show Edit Screen Modal
 */
-function showEditScreenModal(that) {
+wpba.showEditScreenModal = function(that) {
 	var editScreen = $('#wpba_edit_screen'),
 		editScreenIframe = editScreen.find('iframe'),
 		attid
@@ -232,13 +239,66 @@ function showEditScreenModal(that) {
 	});
 }
 
+
+/**
+* Update Post Meta
+*/
+wpba.updatePost = function(id, key, value) {
+	var $ = jQuery,
+			prev = ( prev != undefined) ? prev : false;
+			ajaxData = {
+				action: 'wpba_update_post',
+				id: id,
+				key: key,
+				value: value
+			}
+	;
+
+	$.post(ajaxurl, ajaxData, function(resp){
+		if(ajaxData.key === 'post_title') {
+			var titleSelector = '#attachment_'+resp+' .wpba-attachment-name .wpba-filename';
+			$(titleSelector).text(ajaxData.value);
+			// wpba-post-124
+		}
+		console.log(resp);
+	});
+}
+
+
+/**
+* Title Key Up Handler
+*/
+wpba.titleKeyUpHandler = function() {
+	var $ = jQuery;
+	$('.wpba-attachment-title').on('keyup',function(){
+		var that = $(this);
+		wpba.updatePost(that.parent().data('id'), 'post_title', that.val());
+	});
+}
+
+
+/**
+* Caption Key Up Handler
+*/
+wpba.captionKeyUpHandler = function() {
+	var $ = jQuery;
+	$('.wpba-attachment-caption').on('keyup',function(){
+		var that = $(this);
+		wpba.updatePost(that.parent().data('id'), 'post_excerpt', that.val());
+	});
+}
+
+// [post_content] => description
+
 /**
 * Reset Click Handlers
 */
-function resetClickHandlers() {
-	updateSortOrderClickHandler();
-	unattachAttachmentClickHandler();
-	unattachAttachmentLibraryClickHandler();
-	deleteAttachmentClickHandler();
-	editModalClickHandler();
+wpba.resetClickHandlers = function() {
+	wpba.updateSortOrderClickHandler();
+	wpba.unattachAttachmentClickHandler();
+	wpba.unattachLibraryAttachmentClickHandler();
+	wpba.deleteAttachmentClickHandler();
+	wpba.editModalClickHandler();
+	wpba.titleKeyUpHandler();
+	wpba.captionKeyUpHandler();
 }
