@@ -84,10 +84,11 @@ if ( !class_exists( 'WPBA_Settings' ) ) :
 				// Setup Post Type Disables
 				$post_type_obj = get_post_type_object( $post_type );
 				$post_types[$key] = $post_type_obj->labels->name;
-				// Setup Post Type Options
+				// Setup Post Type Settings
 				$post_type_options[] = $this->build_post_type_array( $post_type_obj );
 			} // foreach()
 
+			// Post Type Disable Settings
 			$post_type_disable = array(
 				array(
 					'name'      => 'wpba-disable-post-types',
@@ -97,6 +98,7 @@ if ( !class_exists( 'WPBA_Settings' ) ) :
 					'options'   => $post_types
 				)
 			);
+
 			$wpba_settings = array_merge( $post_type_disable, $post_type_options );
 			// Settings
 			$settings_fields = array(
@@ -147,14 +149,10 @@ if ( !class_exists( 'WPBA_Settings' ) ) :
 		{
 			// Post Type Options
 			$post_type_options = array(
-				'title' 	=> 'Disable Title Editor',
-				'caption'	=> 'Disable Caption Editor'
+				'title' 		=>	'Disable Title Editor',
+				'caption'		=>	'Disable Caption Editor',
+				'thumbnail'	=>	'Do Not Include Thumbnail'
 			);
-			// Not Available before 3.3
-			// global $wp_version;
-			// if ( floatval($wp_version) >= 3.3 ) {
-			// 	$post_type_options['wysiwg'] 	= 'WYSWIG Editor';
-			// }
 
 			// Settings Array
 			return array(

@@ -39,12 +39,22 @@ class WP_Better_Attachments
 	 * Enqueue Administrator Scripts and Styles
 	 */
 	public function enqueue_admin_scripts() {
+
+		// Make sure the user has not disabled this post type
+		global $wpba_wp_settings_api;
+		global $post;
+		$disabled_post_types = $wpba_wp_settings_api->get_option( 'wpba-disable-post-types', 'wpba_settings', array());
+
+		if ( isset( $post ) AND !empty( $disabled_post_types[$post->post_type] ) )
+			return false;
+
+
 		$current_screen = get_current_screen();
 		$base = $current_screen->base;
 		if ( $base == 'edit' or $base == 'upload' or $base == 'post' OR $base = 'settings_page_wpba-settings' ) {
 			wp_enqueue_style( 'wpba-admin-css', plugins_url( 'assets/css/wpba-admin.css' , dirname( __FILE__ ) ), null, WPBA_VERSION );
 
-			global $wp_version;
+			// global $wp_version;
 			$deps = array(
 				'jquery',
 				'jquery-ui-core',
@@ -52,7 +62,7 @@ class WP_Better_Attachments
 				'jquery-ui-mouse',
 				'jquery-ui-sortable'
 			);
-			if ( floatval($wp_version) >= 3.5 ) {
+			// if ( floatval($wp_version) >= 3.5 ) {
 				// Make sure to enqueue media
 				if ( ! did_action( 'wp_enqueue_media' ) )
 			    wp_enqueue_media();
@@ -64,19 +74,19 @@ class WP_Better_Attachments
 					WPBA_VERSION,
 					true
 				);
-			} else {
-				wp_enqueue_script( 'media-upload' );
-	   		add_thickbox();
-				$deps[] = 'media-upload';
-				$deps[] = 'thickbox';
-				wp_register_script(
-					'wpba-media-handler',
-					plugins_url( 'assets/js/wpba-media-handler-old.min.js' , dirname( __FILE__ ) ),
-					$deps,
-					WPBA_VERSION,
-					true
-				);
-			} // if/else()
+			// } else {
+			// 	wp_enqueue_script( 'media-upload' );
+	  //  		add_thickbox();
+			// 	$deps[] = 'media-upload';
+			// 	$deps[] = 'thickbox';
+			// 	wp_register_script(
+			// 		'wpba-media-handler',
+			// 		plugins_url( 'assets/js/wpba-media-handler-old.min.js' , dirname( __FILE__ ) ),
+			// 		$deps,
+			// 		WPBA_VERSION,
+			// 		true
+			// 	);
+			// } // if/else()
 
 			wp_enqueue_script( 'wpba-media-handler' );
 		} // if()
@@ -98,21 +108,15 @@ class WP_Better_Attachments
 	 * Get Post Attachments
 	 */
 	public function get_post_attachments( $args = array() ) {
+		global  $wpba_wp_settings_api;
 		extract( $args );
-
+		// Make sure we have a post to work with
 		if ( !isset( $post ) )
 			global $post;
 
-		// $show_thumbnail = ( isset( $show_thumbnail ) ) ? $show_thumbnail : true;
-		// // Should we exclude the thumb?
-		// if ( !$show_thumbnail ) {
-		// 	$get_posts_args['meta_query'] = array(
-		// 		array(
-		// 			'key' => '_thumbnail_id',
-		// 			'compare' => 'NOT EXISTS'
-		// 		)
-		// 	);
-		// }
+		$post_type_obj = get_post_type_object( $post->post_type );
+		$settings = $wpba_wp_settings_api->get_option( "wpba-{$post_type_obj->name}-settings", 'wpba_settings', false);
+		extract( $args );
 
 		$get_posts_args = array(
 			'post_type'     => 'attachment',
@@ -122,15 +126,19 @@ class WP_Better_Attachments
 			'orderby'      => 'menu_order'
 		);
 
+		// Should we exclude the thumb?
+		if ( isset( $settings['thumbnail'] ) ) {
+			$get_posts_args['exclude'] = get_post_thumbnail_id($post->ID);
+			$get_posts_args['meta_query'] = array(
+				array(
+					'key' => '_thumbnail_id',
+					'compare' => 'NOT EXISTS'
+				)
+			);
+		} // if()
+
 		// Get the attachments
 		$attachments = get_posts( $get_posts_args );
-		// $image_attachments = array();
-		// foreach ( $attachments as $attachment ) {
-		// 	if ( $this->is_image( $attachment->post_mime_type ) ) {
-		// 		$image_attachments[] = $attachment;
-		// 	} // if(is_image())
-		// } // foreach();
-
 
 		return $attachments;
 	} // get_post_attachments()
