@@ -62,7 +62,7 @@ None so far... If you have any issues please submit an [issue](https://github.co
 = 1.2.1 =
 * Fixed issue with settings not being an array
 
-= 1.2.1 =
+= 1.2.2 =
 * Fixed Un-attach/Delete links not updating attachment list
 * Fixed issue with adding files to a post from the media uploader
 * Removed support WordPress version < 3.5
@@ -87,5 +87,5 @@ Added settings, retrieve attachments function, attachment title edit, and attach
 = 1.2.1 =
 Fixed issue with settings not being an array when not settings are set
 
-= 1.2.1 =
+= 1.2.2 =
 Fixes regressions that I know of as well as the issues/requests on the forum.
