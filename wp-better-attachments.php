@@ -1,24 +1,20 @@
 <?php
 /**
  * @package WP_Better_Attachments
- * @version 1.2.1
+ * @version 1.2.2
  */
 /*
 Plugin Name: WP Better Attachments
 Plugin URI: http://dholloran.github.io/wp-better-attachments
 Description: Better Wordpress Attachments
 Author: Dan Holloran
-Version: 1.2.1
+Version: 1.2.2
 Author URI: http://danholloran.com/
 */
 
-define( 'WPBA_VERSION', '1.2.1' );
+define( 'WPBA_VERSION', '1.2.2' );
 define( 'WPBA_LANG', 'wpba' );
 define( 'WPBA_PATH', plugin_dir_path(__FILE__) );
-
-function wp_test(){
-}
-add_action('admin_enqueue_scripts', 'wp_test');
 
 /**
 * Handles Activation/Deactivation/Install
@@ -58,10 +54,7 @@ function wpba_get_attachments( $post_id = 0 )
 /**
 * Add Attachments button above post editor
 */
-global $wp_version;
-if ( floatval($wp_version) >= 3.5 ) {
-	add_action('media_buttons_context', 'add_form_button');
-}
+add_action('media_buttons_context', 'add_form_button');
 function add_form_button($context){
 	$out = '<a class="button wpba-attachments-button wpba-form-attachments-button" id="wpba_form_attachments_button" href="#">Add Attachments</a>';
 	return $context . $out;

@@ -11,7 +11,6 @@ jQuery(function($){
 		*/
 		// Uploading files
 		$('#wpba_attachments_button, #wpba_form_attachments_button').on('click', function( event ){
-
 			event.preventDefault();
 			var that = $(this);
 			// If the media frame already exists, reopen it.
@@ -47,7 +46,6 @@ jQuery(function($){
 					}
 
 				});
-
 			});
 
 			// Finally, open the modal
