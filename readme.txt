@@ -4,7 +4,7 @@ Donate link: http://danholloran.com/
 Tags: attachment,file,image,post,page,custom post type
 Requires at least: 3.5
 Tested up to: 3.5.2
-Stable tag: 1.2.2
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,9 +15,11 @@ Allows you to add/edit/attach/un-attach/delete/sort the files attached to your W
 
 You can use `wpba_get_attachments( $post->ID )` to retrieve attachments from a certain post or `wpba_get_attachments()` to get the attachments for the current post.
 
+You can now full control over cropping of the different attachment image sizes through the WPBA crop editor in the media editor, this is a Beta feature.
+
 View more information on GitHub [here](https://github.com/DHolloran/wp-better-attachments/)
 
-Whats new in 1.2 Added attachment title edit, Added attachment caption edit, Added ability to disable post types through settings, Added ability to disable parts of the meta box through settings, Added convenience function to get all attachments as an array
+Whats new in 1.3 Added the ability to control how WordPress crops tour thumbnails for different image sizes.
 
 == Installation ==
 1. Upload `wp-github-recent-commit` to the `/wp-content/plugins/` directory
@@ -62,13 +64,17 @@ None so far... If you have any issues please submit an [issue](https://github.co
 = 1.2.1 =
 * Fixed issue with settings not being an array
 
-= 1.2.1 =
+= 1.2.2 =
 * Fixed Un-attach/Delete links not updating attachment list
 * Fixed issue with adding files to a post from the media uploader
 * Removed support WordPress version < 3.5
 * Fixed updating of title and caption edit
 * Added setting to disable thumbnails in attachments list
 * General code cleanup
+
+= 1.3.0 =
+* Added crop editor to media editor
+* Misc. cleanup and bug fixes
 
 == Upgrade Notice ==
 
@@ -87,5 +93,8 @@ Added settings, retrieve attachments function, attachment title edit, and attach
 = 1.2.1 =
 Fixed issue with settings not being an array when not settings are set
 
-= 1.2.1 =
+= 1.2.2 =
 Fixes regressions that I know of as well as the issues/requests on the forum.
+
+= 1.3.0 =
+Added crop editor to media editor
