@@ -31,7 +31,8 @@ Whats new in 1.3 Added the ability to control how WordPress crops tour thumbnail
 
 
 == Frequently Asked Questions ==
-None so far... If you have any issues please submit an [issue](https://github.com/DHolloran/wp-better-attachments/issues/new) or fix it/submit a pull request I will try to handle it ASAP. You an also contact me at [support@danholloran.com](mailto:support@danholloran.com).
+* If you do not want the thumbnail attachments to show as an attachment you can disable them in the settings.  You can access the settings by navigating to Settings > WPBA Settings.
+* If you have any other issues please submit an [issue](https://github.com/DHolloran/wp-better-attachments/issues/new) or fix it/submit a pull request I will try to handle it ASAP. You an also contact me at [support@danholloran.com](mailto:support@danholloran.com).
 
 == Screenshots ==
 1. Image of post editor button
