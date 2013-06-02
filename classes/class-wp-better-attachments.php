@@ -6,18 +6,19 @@ class WP_Better_Attachments
 {
 
 	/**
-	 * Constructor
-	 */
+	* Constructor
+	*/
 	public function __construct( $config = array() ) {
 		$this->init_hooks();
 	} // __construct
 
 
 	/**
-	 * Initialization Hooks
-	 */
+	* Initialization Hooks
+	*/
 	public function init_hooks() {
 		add_action( 'admin_enqueue_scripts', array( &$this, 'enqueue_admin_scripts' ) );
+		add_action( 'wp_enqueue_scripts', array( &$this, 'enqueue_scripts' ) );
 		add_filter( 'media_row_actions', array( &$this, 'unattach_media_row_action' ), 10, 2 );
 		add_action('media_buttons_context', array( &$this, 'add_form_button' ) );
 	} // init_hooks()
@@ -48,9 +49,10 @@ class WP_Better_Attachments
 
 
 	/**
-	 * Add unattach link in media editor
-	 */
-	function unattach_media_row_action( $actions, $post ) {
+	* Add unattach link in media editor
+	*/
+	function unattach_media_row_action( $actions, $post )
+	{
 		if ( $post->post_parent ) {
 			$actions['unattach'] = '<a href="#" title="' . __( "Un-attach this media item." ) . '" class="wpba-unattach-library" data-id="'.$post->ID.'">' . __( 'Un-attach' ) . '</a>';
 			$actions['reattach'] = '<a class="hide-if-no-js wpba-reattach-library" title="' . __( "Re-attach this media item." ) . '" onclick="findPosts.open( '."'media[]','".$post->ID."'". '); return false;" href="#the-list">' . __( 'Re-attach' ) . '</a>';
@@ -61,9 +63,10 @@ class WP_Better_Attachments
 
 
 	/**
-	 * Enqueue Administrator Scripts and Styles
-	 */
-	public function enqueue_admin_scripts() {
+	* Enqueue Administrator Scripts and Styles
+	*/
+	public function enqueue_admin_scripts()
+	{
 
 		// Make sure the user has not disabled this post type
 		global $wpba_wp_settings_api;
@@ -90,7 +93,7 @@ class WP_Better_Attachments
 			// if ( floatval($wp_version) >= 3.5 ) {
 				// Make sure to enqueue media
 				if ( ! did_action( 'wp_enqueue_media' ) )
-			    wp_enqueue_media();
+					wp_enqueue_media();
 
 				wp_register_script(
 					'wpba-media-handler',
@@ -101,7 +104,7 @@ class WP_Better_Attachments
 				);
 			// } else {
 			// 	wp_enqueue_script( 'media-upload' );
-	  //  		add_thickbox();
+		//  		add_thickbox();
 			// 	$deps[] = 'media-upload';
 			// 	$deps[] = 'thickbox';
 			// 	wp_register_script(
@@ -119,9 +122,28 @@ class WP_Better_Attachments
 
 
 	/**
-	 * Get attachment ID from src url
-	 */
-	public function get_attachment_id_from_src( $image_src ) {
+	* Enqueue Frontend Scripts and Styles
+	*
+	* @since 1.3.2
+	*/
+	function enqueue_scripts()
+	{
+		global $post;
+		$style_src = plugins_url( 'assets/css/wpba-frontend.css' , dirname( __FILE__ ) );
+		wp_register_style( 'wpba_front_end_styles', $style_src, array(), WPBA_VERSION );
+		wp_enqueue_style( 'wpba_front_end_styles' );
+
+		$script_src = $style_src = plugins_url( 'assets/js/wpba-frontend.min.js' , dirname( __FILE__ ) );;
+		wp_register_script( 'wpba_front_end_styles', $script_src, array( 'jquery' ), WPBA_VERSION, true );
+		wp_enqueue_script( 'wpba_front_end_styles' );
+	} // enqueue_scripts()
+
+
+	/**
+	* Get attachment ID from src url
+	*/
+	public function get_attachment_id_from_src( $image_src )
+	{
 		global $wpdb;
 		$query = "SELECT ID FROM {$wpdb->posts} WHERE guid='$image_src'";
 		$id = $wpdb->get_var( $query );
@@ -130,11 +152,13 @@ class WP_Better_Attachments
 
 
 	/**
-	 * Get Post Attachments
-	 */
-	public function get_post_attachments( $args = array() ) {
+	* Get Post Attachments
+	*/
+	public function get_post_attachments( $args = array() )
+	{
 		global  $wpba_wp_settings_api;
 		extract( $args );
+
 		// Make sure we have a post to work with
 		if ( !isset( $post ) )
 			global $post;
@@ -143,16 +167,16 @@ class WP_Better_Attachments
 		$settings = $wpba_wp_settings_api->get_option( "wpba-{$post_type_obj->name}-settings", 'wpba_settings', false);
 		extract( $args );
 
+		$show_post_thumbnail = ( isset( $show_post_thumbnail ) ) ? $show_post_thumbnail : false;
 		$get_posts_args = array(
-			'post_type'     => 'attachment',
-			'posts_per_page'  =>  -1,
-			'post_parent'    => $post->ID,
-			'order'       => 'ASC',
-			'orderby'      => 'menu_order'
+			'post_type'				=>	'attachment',
+			'posts_per_page'	=>	-1,
+			'post_parent'			=>	$post->ID,
+			'order'						=>	'ASC',
+			'orderby'					=>	'menu_order'
 		);
-
 		// Should we exclude the thumb?
-		if ( isset( $settings['thumbnail'] ) ) {
+		if ( isset( $settings['thumbnail'] ) OR !$show_post_thumbnail ) {
 			$get_posts_args['exclude'] = get_post_thumbnail_id($post->ID);
 			$get_posts_args['meta_query'] = array(
 				array(
@@ -187,9 +211,10 @@ class WP_Better_Attachments
 
 
 	/**
-	 * Attachment is an image
-	 */
-	protected function is_image( $mime_type ) {
+	* Attachment is an image
+	*/
+	protected function is_image( $mime_type )
+	{
 		$image_mime_types = array(
 			'image/jpeg',
 			'image/gif',
@@ -202,10 +227,11 @@ class WP_Better_Attachments
 	} // is_image()
 
 
-		/**
-	 * Attachment is a document
-	 */
-	protected function is_document( $mime_type ) {
+	/**
+	* Attachment is a document
+	*/
+	protected function is_document( $mime_type )
+	{
 		$document_mime_types = array(
 			'application/pdf',
 			'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -223,10 +249,11 @@ class WP_Better_Attachments
 	} // is_document()
 
 
-		/**
-	 * Attachment is a audio
-	 */
-	protected function is_audio( $mime_type ) {
+	/**
+	* Attachment is a audio
+	*/
+	protected function is_audio( $mime_type )
+	{
 		$audio_mime_types = array(
 			'audio/mpeg',
 			'audio/mpeg',
@@ -241,9 +268,10 @@ class WP_Better_Attachments
 
 
 	/**
-	 * Attachment is a video
-	 */
-	protected function is_video( $mime_type ) {
+	* Attachment is a video
+	*/
+	protected function is_video( $mime_type )
+	{
 		$video_mime_types = array(
 			'video/mp4',
 			'video/mp4',
@@ -259,10 +287,102 @@ class WP_Better_Attachments
 	} // is_video()
 
 
+		/**
+	* Check Allowed Files
+	*
+	* @since 1.3.2
+	*/
+	function check_allowed_file_extensions( $attachments, $allowed_extensions )
+	{
+
+		foreach ( $attachments as $key => $attachment ) {
+			$attachment_url = wp_get_attachment_url( $attachment->ID );
+			if ( $attachment_url ) {
+				$filetype = wp_check_filetype( $attachment_url );
+				$is_allowed_extension = in_array( $filetype['ext'], $allowed_extensions );
+				if ( !$is_allowed_extension ) {
+					unset( $attachments[$key] );
+				} // if()
+			} // if()
+		} // foreach()
+
+		return $attachments;
+	} // check_allowed_file_extensions()
+
+
 	/**
-	 * Attach
-	 */
-	public function attach( $args = array() ) {
+	* Check Allowed File Type Categories
+	*
+	* @since 1.3.2
+	*/
+	function check_allowed_file_type_categories( $attachments, $allowed_categories )
+	{
+		// is_image
+		// is_document
+		// is_audio
+		// is_video
+		$allowed = array();
+		foreach ( $attachments as $key => $attachment ) {
+			foreach ( $allowed_categories as $allowed_category ) {
+				switch ( $allowed_category ) {
+					case 'image':
+						if ( $this->is_image( $attachment->post_mime_type ) ) {
+							$allowed[] = $attachment;
+						} // if()
+						break;
+
+					case 'file':
+						if ( $this->is_document( $attachment->post_mime_type ) ) {
+							$allowed[] = $attachment;
+						} // if()
+						break;
+
+					case 'audio':
+						if ( $this->is_audio( $attachment->post_mime_type ) ) {
+							$allowed[] = $attachment;
+						} // if()
+						break;
+
+					case 'video':
+						if ( $this->is_video( $attachment->post_mime_type ) ) {
+							$allowed[] = $attachment;
+						} // if()
+						break;
+
+					default:
+						break;
+				} // switch
+			} // foreach
+		} // foreach()
+
+		return $allowed;
+	} // check_allowed_file_type_categories()
+
+
+	/**
+	* Get Extensions From WP Allowed Mime Types
+	*
+	* @since 1.3.2
+	*/
+	function get_allowed_extensions()
+	{
+		$allowed_mime_types = get_allowed_mime_types();
+		$allowed_extensions = array();
+
+		// Extract extensions from mime types
+		foreach ($allowed_mime_types as $key => $value) {
+			$extensions = explode( '|', $key );
+			$allowed_extensions = array_merge( $allowed_extensions, $extensions );
+		} // foreach()
+
+		return $allowed_extensions;
+	} // get_allowed_extensions()
+
+	/**
+	* Attach
+	*/
+	public function attach( $args = array() )
+	{
 		extract( $args );
 		global $wpdb;
 
@@ -295,9 +415,10 @@ class WP_Better_Attachments
 
 
 	/**
-	 * Un-attach
-	 */
-	public function unattach( $args = array() ) {
+	* Un-attach
+	*/
+	public function unattach( $args = array() )
+	{
 		extract( $args );
 
 		// Can not do anything with out the attachment id
@@ -313,9 +434,10 @@ class WP_Better_Attachments
 
 
 	/**
-	 * Insert Attachment
-	 */
-	public function insert_attachment( $url ) {
+	* Insert Attachment
+	*/
+	public function insert_attachment( $url )
+	{
 		$wp_upload_dir = wp_upload_dir();
 		$filename = str_replace( $wp_upload_dir['url'] . '/', '', $url );
 		$wp_filetype = wp_check_filetype( basename( $filename ), null );
