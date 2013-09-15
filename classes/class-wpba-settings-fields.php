@@ -3,17 +3,20 @@
 * WP Better Attachments Settings Fields
 *
 * @since 1.3.6
+*
 * @package WP_Better_Attachments
+*
 * @author Dan Holloran dan@danholloran.com
 */
 class WPBA_Settings_Fields extends WP_Better_Attachments
 {
 	protected $hide_link;
 
+
+
 	/**
 	* Constructor
 	*
-	* @return null
 	* @since 1.3.6
 	*/
 	function __construct( $config = array() )
@@ -23,11 +26,13 @@ class WPBA_Settings_Fields extends WP_Better_Attachments
 	} // __construct
 
 
+
 	/**
 	* Media Page Settings
 	*
 	* @since 1.3.6
-	* @return array
+	*
+	* @return array The media table settings
 	*/
 	public function get_media_table_settings()
 	{
@@ -48,11 +53,13 @@ class WPBA_Settings_Fields extends WP_Better_Attachments
 	} // get_media_table_settings()
 
 
+
 	/**
 	* Meta Box Settings
 	*
 	* @since 1.3.6
-	* @return array
+	*
+	* @return array The metabox settings
 	*/
 	public function get_metabox_settings()
 	{
@@ -74,11 +81,13 @@ class WPBA_Settings_Fields extends WP_Better_Attachments
 	} // get_metabox_settings()
 
 
+
 	/**
 	* Edit Modal Page Settings
 	*
 	* @since 1.3.6
-	* @return array
+	*
+	* @return array The modal settings
 	*/
 	public function get_edit_modal_settings()
 	{
@@ -97,11 +106,13 @@ class WPBA_Settings_Fields extends WP_Better_Attachments
 	} // get_edit_modal_settings()
 
 
+
 	/**
 	* Post Type Disable Settings
 	*
-	* @return array
 	* @since 1.3.6
+	*
+	* @return array Disabled post types settings
 	*/
 	function get_post_type_disable_settings()
 	{
@@ -125,11 +136,13 @@ class WPBA_Settings_Fields extends WP_Better_Attachments
 	} // get_post_type_disable_settings()
 
 
+
 	/**
 	* Get Post Types
 	*
-	* @return array
 	* @since 1.3.6
+	*
+	* @return array Retrieves all post types that support attachments
 	*/
 	function get_post_types()
 	{
@@ -143,11 +156,13 @@ class WPBA_Settings_Fields extends WP_Better_Attachments
 	} // get_post_types()
 
 
+
 	/**
 	* Global Settings
 	*
-	* @return array
 	* @since 1.3.6
+	*
+	* @return array Global settings
 	*/
 	function get_global_settings()
 	{
@@ -178,11 +193,13 @@ class WPBA_Settings_Fields extends WP_Better_Attachments
 	} // get_global_settings()
 
 
+
 	/**
 	* Post Type Options
 	*
 	* @since 1.3.6
-	* @return array
+	*
+	* @return array Current all post type settings
 	*/
 	public function get_post_type_settings()
 	{
@@ -195,32 +212,35 @@ class WPBA_Settings_Fields extends WP_Better_Attachments
 			$post_type_settings[] = $this->get_meta_box_title_fields( $post_type );
 			$post_type_settings[] = $this->get_post_type_options( $post_type );
 			$post_type_settings[] = $this->get_post_type_attachment_types( $post_type );
+      $post_type_settings[] = $this->get_enable_page_within_post_type( $post_type );
 		} // foreach()
 
 		return $post_type_settings;
 	} // get_post_type_settings()
 
 
+
 	/**
 	* Post Type Options
 	*
 	* @since 1.3.6
-	* @return array
+	*
+	* @return array Current post type settings
 	*/
 	public function get_post_type_options( $post_type )
 	{
 		$post_type_obj = get_post_type_object( $post_type );
 		$post_type_options = array(
-			'title' 								=> 'Disable Title Editor (meta box)',
-			'caption'								=> 'Disable Caption Editor (meta box)',
-			'mb_show_attachment_id'	=> 'Disable Attachment ID (meta box)',
-			'mb_unattach_link'			=> 'Disable Un-attach Link (meta box)',
-			'mb_edit_link'					=> 'Disable Edit Link (meta box)',
-			'mb_delete_link'				=> 'Disable Delete Link (meta box)',
-			'em_caption'						=> 'Disable Caption (edit modal)',
-			'em_alternative_text'		=> 'Disable Alternative Text (edit modal)',
-			'em_description'				=> 'Disable Description (edit modal)',
-			'mb_thumbnail'					=> 'Do Not Include Thumbnail'
+			'title'                  => 'Disable Title Editor (meta box)',
+			'caption'                => 'Disable Caption Editor (meta box)',
+			'mb_show_attachment_id'  => 'Disable Attachment ID (meta box)',
+			'mb_unattach_link'       => 'Disable Un-attach Link (meta box)',
+			'mb_edit_link'           => 'Disable Edit Link (meta box)',
+			'mb_delete_link'         => 'Disable Delete Link (meta box)',
+			'em_caption'             => 'Disable Caption (edit modal)',
+			'em_alternative_text'    => 'Disable Alternative Text (edit modal)',
+			'em_description'         => 'Disable Description (edit modal)',
+			'mb_thumbnail'           => 'Do Not Include Thumbnail'
 		);
 
 		return array(
@@ -233,11 +253,13 @@ class WPBA_Settings_Fields extends WP_Better_Attachments
 	} // get_post_type_options()
 
 
+
 	/**
 	* Get Current Post Type Attachment Types
 	*
 	* @since 1.3.6
-	* @return array
+	*
+	* @return array Post type allowed attachment types
 	*/
 	public function get_post_type_attachment_types( $post_type )
 	{
@@ -259,11 +281,13 @@ class WPBA_Settings_Fields extends WP_Better_Attachments
 	} // get_post_type_attachment_types()
 
 
+
 	/**
 	* Post Type Attachment Types
 	*
 	* @since 1.3.6
-	* @return array
+	*
+	* @return array Attachment types
 	*/
 	public function get_attachment_types()
 	{
@@ -284,11 +308,12 @@ class WPBA_Settings_Fields extends WP_Better_Attachments
 	} // get_attachment_types()
 
 
+
 	/**
 	* Meta Box Titles
 	*
 	* @since 1.3.6
-	* @return array
+	* @return array Meta box titles
 	*/
 	public function get_meta_box_title_fields( $post_type )
 	{
@@ -301,7 +326,27 @@ class WPBA_Settings_Fields extends WP_Better_Attachments
 			'default'	=> 'WP Better Attachments'
 		);
 	} // get_meta_box_title_fields()
-} // class
+
+
+
+  /**
+  * Enable pages by slug
+  *
+  * @since 1.3.7
+  * @return array Enabled pages by slug fields
+  */
+  public function get_enable_page_within_post_type( $post_type )
+  {
+    $post_type_obj = get_post_type_object( $post_type );
+    return array(
+      'name'    => "wpba-{$post_type_obj->name}-enabled-pages",
+      'label'   => __( "Enable meta box only on these {$post_type_obj->labels->name} pages", 'wpba' ),
+      'desc'    => __( 'Comma separated list of page slugs ex: slug1,slug2,slug-3', 'wpba' ),
+      'type'    => 'text',
+      'default' => ''
+    );
+  } // get_enable_page_within_post_type()
+} // END Class WPBA_Settings_Fields()
 
 // initiate the class
 global $wpba_settings_fields;

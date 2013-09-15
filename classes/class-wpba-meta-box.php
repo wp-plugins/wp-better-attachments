@@ -2,8 +2,10 @@
 /**
 * WP Better Attachments Meta Box
 *
- * @package WP_Better_Attachments
+* @package WP_Better_Attachments
+*
 * @since 1.0.0
+*
 * @author Dan Holloran dan@danholloran.com
 */
 class WPBA_Meta_Box extends WP_Better_Attachments
@@ -11,8 +13,9 @@ class WPBA_Meta_Box extends WP_Better_Attachments
 	/**
 	* Constructor
 	*
+	* @param array $config Class configuration
+	*
 	* @since 1.0.0
-	* @return null
 	*/
 	public function __construct( $config = array() ) {
 		parent::__construct();
@@ -20,11 +23,13 @@ class WPBA_Meta_Box extends WP_Better_Attachments
 	} // __construct
 
 
+
 	/**
 	* Initialization Hooks
 	*
 	* @since 1.0.0
-	* @return null
+	*
+	* @return Void
 	*/
 	public function init_hooks() {
 		add_action( 'add_meta_boxes', array( &$this, 'add_meta_box' ) );
@@ -35,11 +40,13 @@ class WPBA_Meta_Box extends WP_Better_Attachments
 	} // init_hooks()
 
 
+
 	/**
 	* Adds the meta box container
 	*
 	* @since 1.0.0
-	* @return null
+	*
+	* @return Void
 	*/
 	public function add_meta_box() {
 		$post_types = get_post_types();
@@ -47,13 +54,15 @@ class WPBA_Meta_Box extends WP_Better_Attachments
 		unset( $post_types["revision"] );
 		unset( $post_types["nav_menu_item"] );
 		unset( $post_types["deprecated_log"] );
+
 		global $wpba_wp_settings_api;
+		global $post;
+
 		$disabled_post_types = $this->disabled_post_types;
 
 		foreach ( $post_types as $post_type ) {
-			if ( !in_array( $post_type, $disabled_post_types ) ) {
-				global $post;
-				global $wpba_wp_settings_api;
+
+			if ( $this->meta_box_is_enabled( $post_type ) ) {
 				$meta_box_title = $wpba_wp_settings_api->get_option( "wpba-{$post->post_type}-meta-box-title", 'wpba_settings', 'WP Better Attachments' );
 				add_meta_box(
 					'wpba_meta_box',
@@ -68,11 +77,52 @@ class WPBA_Meta_Box extends WP_Better_Attachments
 	} // add_meta_box()
 
 
+
+	/**
+	 * Checks if the meta box is enabled
+	 * This will validate if the current page and post type have been enabled in settings
+	 *
+	 * @param  string $validation_post_type Post type to validate against
+	 *
+	 * @return boolean                      Returns true if the meta box is enabled
+	 */
+	public function meta_box_is_enabled( $validation_post_type )
+	{
+		global $wpba_wp_settings_api;
+		global $post;
+
+		// Post Type Check
+		$disabled_post_types = $this->disabled_post_types;
+		$post_type_enabled = ( ! in_array( $validation_post_type, $disabled_post_types ) );
+
+		// Page Check
+		$enabled_page_slugs = $wpba_wp_settings_api->get_option( "wpba-{$post->post_type}-enabled-pages", 'wpba_settings', '' );
+		$page_enabled = true;
+		if ( $enabled_page_slugs !== '' ) {
+			$enabled_pages = explode(',', $enabled_page_slugs);
+
+			// Whitespace insensitive
+			foreach ( $enabled_pages as $key => $enabled_page )
+				$enabled_pages[$key] = trim( $enabled_page );
+
+			$page_enabled = ( in_array( $post->post_name, $enabled_pages ) );
+		} // if()
+
+		// Validate both page and post type
+		if ( $post_type_enabled && $page_enabled )
+			return true;
+
+		return false;
+	} // meta_box_is_enabled()
+
+
+
 	/**
 	* Render Meta Box content
 	*
 	* @since 1.0.0
-	* @return null
+	*
+	* @return Void
 	*/
 	public function render_meta_box_content() {
 		global $post; ?>
@@ -97,11 +147,13 @@ class WPBA_Meta_Box extends WP_Better_Attachments
 	} // render_meta_box_content()
 
 
+
 	/**
 	* Output Title Form Input
 	*
 	* @since 1.2.0
-	* @return string
+	*
+	* @return string Title meta box input field HTML
 	*/
 	public function output_title_input( $args = array() )
 	{
@@ -130,11 +182,13 @@ class WPBA_Meta_Box extends WP_Better_Attachments
 	} // output_title_input()
 
 
+
 	/**
 	* Output Caption Form Input
 	*
 	* @since 1.2.0
-	* @return string
+	*
+	* @return string Caption meta box input field HTML
 	*/
 	public function output_caption_input( $args = array() )
 	{
@@ -161,11 +215,13 @@ class WPBA_Meta_Box extends WP_Better_Attachments
 	} // output_caption_input()
 
 
+
 	/**
 	* Editors Display Class
 	*
 	* @since 1.3.5
-	* @return string
+	*
+	* @return string Class to control how to display the meta box either collapsed with no text boxes or normal
 	*/
 	public function display_class() {
 		global $post;
@@ -175,14 +231,15 @@ class WPBA_Meta_Box extends WP_Better_Attachments
 			return ' wpba-editor-collapsed';
 
 		return '';
-	}
+	} // display_class()
 
 
 	/**
 	* Output Post Attachments
  	*
 	* @since 1.0.0
-	* @return string
+	*
+	* @return string Attachments HTML
 	*/
 	public function output_post_attachments( $args = array() )
 	{
@@ -202,11 +259,13 @@ class WPBA_Meta_Box extends WP_Better_Attachments
 	} // output_post_attachments()
 
 
+
 	/**
 	* Build Attachment List
 	*
 	* @since 1.0.0
-	* @return string
+	*
+	* @return string Attachment image list item(s) HTML
 	*/
 	public function build_image_attachment_li( $attachments, $args = array() ) {
 		extract( $args );
@@ -241,11 +300,12 @@ class WPBA_Meta_Box extends WP_Better_Attachments
 	} // build_image_attachment_li()
 
 
+
 	/**
 	* Output Edit Modal
-	*
-	* @return string
 	* @since 1.3.6
+	*
+	* @return string Edit menu HTML
 	*/
 	public function output_edit_menu( $attachment )
 	{
@@ -268,11 +328,13 @@ class WPBA_Meta_Box extends WP_Better_Attachments
 	} // output_edit_menu()
 
 
+
 	/**
 	* Output attachment menu, title, and id
 	*
-	* @return string
 	* @since 1.3.6
+	*
+	* @return string Title with attachment information HTML
 	*/
 	public function output_menu_id_title( $attachment, $mime_type )
 	{
@@ -298,11 +360,14 @@ class WPBA_Meta_Box extends WP_Better_Attachments
 	} // output_menu_id_title()
 
 
+
+
 	/**
 	* Output Placeholder Image
 	*
-	* @return string
 	* @since 1.3.6
+	*
+	* @return string Placeholder image HTML for attachment types other than image
 	*/
 	function output_placeholder_image( $attachment, $mime_type )
 	{
@@ -327,11 +392,13 @@ class WPBA_Meta_Box extends WP_Better_Attachments
 	} // placeholder_image()
 
 
+
 	/**
 	* Edit Modal
 	*
-	* @return string
 	* @since 1.1.0
+	*
+	* @return string Edit modal HTML
 	*/
 	public function edit_modal()
 	{
