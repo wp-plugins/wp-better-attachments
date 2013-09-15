@@ -3,42 +3,62 @@
 * WP Better Attachments
 *
 * @package WP_Better_Attachments
+*
 * @since 1.0.0
+*
 * @author Dan Holloran dan@danholloran.com
 */
 class WP_Better_Attachments
 {
+	/** Global settings @var array */
 	public $global_settings;
+	/** Disabled post types @var array */
 	public $disabled_post_types;
+	/** Media table settings @var array */
 	public $media_table_settings;
+	/** Meta box settings @var array */
 	public $meta_box_settings;
+	/** Edit modal settings @var array */
 	public $edit_modal_settings;
+	/** Disabled file types @var array */
 	public $disabled_file_types;
+	/** Current post type meta box title @var string */
 	public $current_post_type_meta_box_title;
+	/** Current post type settings @var array */
 	public $current_post_type_settings;
+	/** Current post type disabled files @var array */
 	public $current_post_type_disabled_file_types;
+	/** Current WordPress global $post object @var array */
 	public $current_post_obj;
+	/** Current post type @var array */
 	public $current_post_type;
+	/** Current post type object @var array @uses get_post_type_object() */
 	public $current_post_type_obj;
+
+
 
 	/**
 	* Constructor
 	*
+	* @param array $config Class configuration
+	*
 	* @since 1.0.0
-	* @return null
 	*/
-	public function __construct( $config = array() ) {
+	public function __construct( $config = array() )
+	{
 		// Setup
 		$this->init_global_settings();
 		$this->init_hooks();
 	} // __construct
 
 
+
 	/**
 	* Initialize Global Properties
 	*
-	* @return null
 	* @since 1.3.5
+	*
+	* @return Void
 	*/
 	public function init_global_properties()
 	{
@@ -60,11 +80,13 @@ class WP_Better_Attachments
 	} // init_global_settings()
 
 
+
 	/**
 	* Initialize Global Settings
 	*
-	* @return null
 	* @since 1.3.5
+	*
+	* @return Void
 	*/
 	public function init_global_settings()
 	{
@@ -78,13 +100,16 @@ class WP_Better_Attachments
 	} // init_global_settings()
 
 
+
 	/**
 	* Initialization Hooks
 	*
 	* @since 1.0.0
-	* @return null
+	*
+	* @return Void
 	*/
-	public function init_hooks() {
+	public function init_hooks()
+	{
 		add_action( 'admin_enqueue_scripts', array( &$this, 'enqueue_admin_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( &$this, 'enqueue_scripts' ) );
 		add_action('media_buttons_context', array( &$this, 'add_form_button' ) );
@@ -95,42 +120,52 @@ class WP_Better_Attachments
 	} // init_hooks()
 
 
+
 	/**
 	* Add Attachments button above post editor
 	*
 	* @since 1.0.0
-	* @return string
+	*
+	* @param  string $context HTML above post editor
+	*
+	* @return string Add attachment button HTML
 	*/
-	function add_form_button($context){
+	function add_form_button( $context )
+	{
 		// Make sure the user has not disabled this post type
 		global $post;
-		if ( isset( $post ) AND !empty( $this->disabled_post_types[$post->post_type] ) ) {
+		if ( isset( $post ) AND !empty( $this->disabled_post_types[$post->post_type] ) )
 			return $context;
-		} // if()
 
 
 		// Check if the button has been added
 		$button_added = ( strpos( $context, 'wpba_form_attachments_button' ) === false ) ? false : true;
-		if ( $button_added ) {
+		if ( $button_added )
 			return $context;
-		} // if()
-
 
 		// Add the button
 		$out = '<a class="button wpba-attachments-button wpba-form-attachments-button" id="wpba_form_attachments_button" href="#"><span class="wpba-media-buttons-icon"></span> Add Attachments</a>';
+
 		return $context . $out;
 	} // add_form_button()
+
 
 
 	/**
 	* Check if disabled in settings
 	*
-	* @return boolean
 	* @since 1.3.5
+	*
+	* @param string  $option_type Option value
+	* @param integer $post_ID Post ID for the post to check if disabled
+	*
+	* @return boolean
 	*/
-	public function setting_disabled( $option_type )
+	public function setting_disabled( $option_type, $post_ID = null )
 	{
-		if ( $this->current_post_type_disabled() ) return true;
+		if ( $this->current_post_type_disabled( $post_ID ) )
+			return true;
+
 		switch ( $option_type ) {
 			case 'thumbnail':
 				if ( isset( $this->global_settings['thumbnail'] ) )
@@ -259,25 +294,37 @@ class WP_Better_Attachments
 	} // setting_disabled()
 
 
+
 	/**
 	* Current Post Type Disabled
 	*
-	* @return boolean
 	* @since 1.3.5
+	*
+	* @param integer $post_ID Post ID for the post to check if disabled
+	*
+	* @return boolean
 	*/
-	public function current_post_type_disabled()
+	public function current_post_type_disabled( $post_ID = null )
 	{
-		if ( in_array( $this->current_post_type, $this->disabled_post_types ) )
+		$current_post_type = $this->current_post_type;
+
+		if ( ! is_null( $post_ID ) )
+			$current_post_type = get_post_type( $post_ID );
+
+		if ( in_array( $current_post_type, $this->disabled_post_types ) )
 			return true;
 
 		return false;
 	} // current_post_type_disabled()
 
+
+
 	/**
 	* Enqueue Administrator Scripts and Styles
 	*
 	* @since 1.0.0
-	* @return null
+	*
+	* @return Void
 	*/
 	public function enqueue_admin_scripts()
 	{
@@ -326,11 +373,13 @@ class WP_Better_Attachments
 	} // enqueue_admin_scripts()
 
 
+
 	/**
 	* Enqueue Frontend Scripts and Styles
 	*
 	* @since 1.3.2
-	* @return null
+	*
+	* @return Void
 	*/
 	function enqueue_scripts()
 	{
@@ -349,33 +398,47 @@ class WP_Better_Attachments
 	} // enqueue_scripts()
 
 
+
 	/**
 	* Get attachment ID from src url
 	*
 	* @since 1.0.0
-	* @return string
+	*
+	* @param string $attachment_url Absolute URI to an attachment
+	*
+	* @return integer Post ID
 	*/
-	public function get_attachment_id_from_src( $image_src )
+	public function get_attachment_id_from_src( $attachment_url )
 	{
 		global $wpdb;
-		$query = "SELECT ID FROM {$wpdb->posts} WHERE guid='$image_src'";
+		$query = "SELECT ID FROM {$wpdb->posts} WHERE guid='$attachment_url'";
 		$id = $wpdb->get_var( $query );
 		return $id;
 	} // get_attachment_id_from_src()
+
 
 
 	/**
 	* Get Post Attachments
 	*
 	* @since 1.0.0
-	* @return array
+	*
+	* @param  string[]  $args {
+	* 	@type integer $post                Optional Post object used to retrieve attachments
+	* 	@type boolean $show_post_thumbnail Optional To include thumbnail as attachment. Default false
+	* }
+	*
+	* @return array Retrieved attachments
 	*/
 	public function get_post_attachments( $args = array() )
 	{
 		extract( $args );
 
+		if ( isset( $post_id ) )
+			$post = get_post( $post_id );
+
 		// Make sure we have a post to work with
-		if ( !isset( $post ) )
+		if ( ! isset( $post ) )
 			global $post;
 
 		// Make sure that post is not null
@@ -384,14 +447,15 @@ class WP_Better_Attachments
 
 		// Specific Post settings
 		global $wpba_wp_settings_api;
-		$post_settings = $wpba_wp_settings_api->get_option( "wpba-{$post->post_type}-settings", 'wpba_settings', false);
+		$post_settings = $wpba_wp_settings_api->get_option( "wpba-{$post->post_type}-settings", 'wpba_settings', array() );
+
 
 		$get_posts_args = array(
-			'post_type'				=>	'attachment',
-			'posts_per_page'	=>	-1,
-			'post_parent'			=>	$post->ID,
-			'order'						=>	'ASC',
-			'orderby'					=>	'menu_order'
+			'post_type'      => 'attachment',
+			'posts_per_page' => -1,
+			'post_parent'    => $post->ID,
+			'order'          => 'ASC',
+			'orderby'        => 'menu_order'
 		);
 
 		// Should we exclude the thumb?
@@ -404,7 +468,7 @@ class WP_Better_Attachments
 			} // if()
 		} elseif( $post_settings_thumb OR $global_settings_thumb ) {
 			$no_thumbs = true;
-		}
+		} // if/else
 
 
 		if ( $no_thumbs ) {
@@ -416,26 +480,30 @@ class WP_Better_Attachments
 			));
 		} // if()
 
-
 		// Get the attachments
-		$attachments = $this->validate_attachment_mime_type( get_posts( $get_posts_args ) );
+		$attachments = $this->validate_attachment_mime_type( get_posts( $get_posts_args ), $post->ID );
 
 		return $attachments;
 	} // get_post_attachments()
 
 
+
 	/**
 	* Validate Attachment Mime Type Settings
 	*
-	* @return boolean
 	* @since 1.3.6
+	*
+	* @param array   $attachments Post attachment objects
+	* @param integer $post_id     The post ID of the post to validate
+	*
+	* @return boolean
 	*/
-	function validate_attachment_mime_type( $attachments )
+	function validate_attachment_mime_type( $attachments, $post_id )
 	{
-		$disable_image = $this->setting_disabled( 'image-file-type' );
-		$disable_video = $this->setting_disabled( 'video-file-type' );
-		$disable_audio = $this->setting_disabled( 'audio-file-type' );
-		$disable_document = $this->setting_disabled( 'documents-file-type' );
+		$disable_image = $this->setting_disabled( 'image-file-type', $post_id );
+		$disable_video = $this->setting_disabled( 'video-file-type', $post_id );
+		$disable_audio = $this->setting_disabled( 'audio-file-type', $post_id );
+		$disable_document = $this->setting_disabled( 'documents-file-type', $post_id );
 
 		foreach ( $attachments as $key => $attachment ) {
 			$mime_type = get_post_mime_type( $attachment->ID );
@@ -453,11 +521,15 @@ class WP_Better_Attachments
 	} // validate_attachment_mime_type()
 
 
+
 	/**
 	* Attachment placeholder image name
 	*
 	* @since 1.0.0
-	* @return string
+	*
+	* @param string $mime_type Mime type value
+	*
+	* @return string Placeholder image name
 	*/
 	protected function placeholder_image( $mime_type )
 	{
@@ -473,10 +545,14 @@ class WP_Better_Attachments
 	} // placeholder_image()
 
 
+
 	/**
 	* Attachment is an image
 	*
 	* @since 1.0.0
+	*
+	* @param string $mime_type Mime type value
+	*
 	* @return boolean
 	*/
 	protected function is_image( $mime_type )
@@ -493,10 +569,14 @@ class WP_Better_Attachments
 	} // is_image()
 
 
+
 	/**
 	* Attachment is a document
 	*
 	* @since 1.0.0
+	*
+	* @param string $mime_type Mime type value
+	*
 	* @return boolean
 	*/
 	protected function is_document( $mime_type )
@@ -518,10 +598,14 @@ class WP_Better_Attachments
 	} // is_document()
 
 
+
 	/**
-	* Attachment is a audio
+	* Attachment is audio
 	*
 	* @since 1.0.0
+	*
+	* @param string $mime_type Mime type value
+	*
 	* @return boolean
 	*/
 	protected function is_audio( $mime_type )
@@ -539,10 +623,14 @@ class WP_Better_Attachments
 	} // is_audio()
 
 
+
 	/**
-	* Attachment is a video
+	* Attachment is video
 	*
 	* @since 1.0.0
+	*
+	* @param string $mime_type Mime type value
+	*
 	* @return boolean
 	*/
 	protected function is_video( $mime_type )
@@ -562,14 +650,16 @@ class WP_Better_Attachments
 	} // is_video()
 
 
-		/**
-
 
 	/**
 	* Check Allowed Files
 	*
 	* @since 1.3.2
-	* @return array
+	*
+	* @param array $attachments Attachment post objects
+	* @param array $allowed_extensions Allowed extensions
+	*
+	* @return array Attachments with allowed file type(s)
 	*/
 	function check_allowed_file_extensions( $attachments, $allowed_extensions )
 	{
@@ -579,9 +669,8 @@ class WP_Better_Attachments
 			if ( $attachment_url ) {
 				$filetype = wp_check_filetype( $attachment_url );
 				$is_allowed_extension = in_array( $filetype['ext'], $allowed_extensions );
-				if ( !$is_allowed_extension ) {
+				if ( !$is_allowed_extension )
 					unset( $attachments[$key] );
-				} // if()
 			} // if()
 		} // foreach()
 
@@ -589,11 +678,16 @@ class WP_Better_Attachments
 	} // check_allowed_file_extensions()
 
 
+
 	/**
 	* Check Allowed File Type Categories
 	*
 	* @since 1.3.2
-	* @return array
+	*
+	* @param array $attachments Attachment post objects
+	* @param array $allowed_extensions Allowed categories
+	*
+	* @return array Attachments with allowed file categories
 	*/
 	function check_allowed_file_type_categories( $attachments, $allowed_categories )
 	{
@@ -639,11 +733,13 @@ class WP_Better_Attachments
 	} // check_allowed_file_type_categories()
 
 
+
 	/**
 	* Get Extensions From WP Allowed Mime Types
 	*
 	* @since 1.3.2
-	* @return array
+	*
+	* @return array Allowed extensions
 	*/
 	function get_allowed_extensions()
 	{
@@ -659,10 +755,18 @@ class WP_Better_Attachments
 		return $allowed_extensions;
 	} // get_allowed_extensions()
 
+
+
 	/**
 	* Attach
 	*
 	* @since 1.0.0
+	*
+	* @param  string[]  $args {
+	* 	@type integer $parent_id Required Post ID to add the attachment to
+	* 	@type array   $media     Attachment IDs
+	* }
+	*
 	* @return boolean
 	*/
 	public function attach( $args = array() )
@@ -670,7 +774,7 @@ class WP_Better_Attachments
 		extract( $args );
 		global $wpdb;
 
-		if ( !$parent_id )
+		if ( ! $parent_id )
 			return;
 
 		$parent = get_post( $parent_id );
@@ -680,9 +784,9 @@ class WP_Better_Attachments
 			$att_id = (int) $att_id;
 
 			$attach[] = $att_id;
-		}
+		} // if()
 
-		if ( !empty( $attach ) ) {
+		if ( ! empty( $attach ) ) {
 			$attach_string = implode( ',', $attach );
 			$attached = $wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET post_parent = %d WHERE post_type = 'attachment' AND ID IN ( $attach_string )", $parent_id ) );
 			foreach ( $attach as $att_id ) {
@@ -697,10 +801,16 @@ class WP_Better_Attachments
 	} //attach()
 
 
+
 	/**
 	* Un-attach
 	*
 	* @since 1.0.0
+	*
+	* @param  string[]  $args {
+	* 	@type integer $attachment_id Required Post ID of the attachment to un-attach
+	* }
+	*
 	* @return boolean
 	*/
 	public function unattach( $args = array() )
@@ -719,11 +829,15 @@ class WP_Better_Attachments
 	} // unattach()
 
 
+
 	/**
 	* Insert Attachment
 	*
 	* @since 1.0.0
-	* @return string
+	*
+	* @param  string $url URL of the attachment to add
+	*
+	* @return integer Post ID of the inserted attachment
 	*/
 	public function insert_attachment( $url )
 	{
@@ -739,8 +853,7 @@ class WP_Better_Attachments
 			'post_status' => 'inherit'
 		);
 		$attach_id = wp_insert_attachment( $attachment, $url );
-		// you must first include the image.php file
-		// for the function wp_generate_attachment_metadata() to work
+
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 		$attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
 		wp_update_attachment_metadata( $attach_id, $attach_data );
