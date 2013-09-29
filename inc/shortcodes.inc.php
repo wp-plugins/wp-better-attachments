@@ -6,15 +6,14 @@
  *
  * @since 1.2.0
  *
- * @param  string[]  $args {
- * 	@type integer $post                Optional Post object used to retrieve attachments
- * 	@type boolean $show_post_thumbnail Optional To include thumbnail as attachment. Default false
+ * @param string[] $args {
+ *  @type integer $post                Optional Post object used to retrieve attachments
+ *  @type boolean $show_post_thumbnail Optional To include thumbnail as attachment. Default false
  * }
  *
  * @return array       Retrieved attachment post objects
  */
-function wpba_get_attachments( $args = array() )
-{
+function wpba_get_attachments( $args = array() ) {
 	global $wpba;
 
 	if ( gettype( $args ) == 'array' ) {
@@ -25,8 +24,8 @@ function wpba_get_attachments( $args = array() )
 		// was a post id and now it should be included
 		// in the $args object
 		$post_id = $args;
-		$args = array();
-	}	// if/else()
+		$args    = array();
+	} // if/else()
 
 
 	if ( isset( $post_id ) ) {
@@ -42,14 +41,13 @@ function wpba_get_attachments( $args = array() )
 
 
 /**
-* Check if post has attachment
-*
-* @uses wpba_get_attachments()
-*
-* @since 1.3.3
-*/
-function wpba_attachments_exist( $args = array() )
-{
+ * Check if post has attachment
+ *
+ * @uses wpba_get_attachments()
+ *
+ * @since 1.3.3
+ */
+function wpba_attachments_exist( $args = array() ) {
 	if ( count( wpba_get_attachments( $args ) ) > 0 ) {
 		return true;
 	} //if()
@@ -59,26 +57,32 @@ function wpba_attachments_exist( $args = array() )
 
 
 
+function wpba_get_external_attachment_link( $attachment_id ) {
+	global $wpba;
+
+	return $wpba->get_external_attachment_link( $attachment_id );
+}
+
+
 /**
-* WPBA Attachment List Shortcode
-*
-* @since 1.3.2
-*/
-function wpba_attachment_list_shortcode( $atts )
-{
+ * WPBA Attachment List Shortcode
+ *
+ * @since 1.3.2
+ */
+function wpba_attachment_list_shortcode( $atts ) {
 	// Make sure atts is an array
 	$atts = ( gettype( $atts ) != 'array' ) ? array() : $atts;
 	global $wpba_frontend;
 	return $wpba_frontend->build_attachment_list( $atts );
 } // wpba_attachment_list_shortcode()
-add_shortcode( 'wpba-attachment-list','wpba_attachment_list_shortcode' );
+add_shortcode( 'wpba-attachment-list', 'wpba_attachment_list_shortcode' );
 
 
 /**
-* WPBA Attachment List Convenience Function
-*
-* @since 1.3.2
-*/
+ * WPBA Attachment List Convenience Function
+ *
+ * @since 1.3.2
+ */
 function wpba_attachment_list( $args = array() ) {
 	global $wpba_frontend;
 
@@ -87,10 +91,10 @@ function wpba_attachment_list( $args = array() ) {
 
 
 /**
-* WPBA FlexSlider Shortcode
-*
-* @since 1.3.2
-*/
+ * WPBA FlexSlider Shortcode
+ *
+ * @since 1.3.2
+ */
 function wpba_flexslider_shortcode( $atts ) {
 	// Make sure atts is an array
 	$atts = ( gettype( $atts ) != 'array' ) ? array() : $atts;
@@ -102,4 +106,4 @@ function wpba_flexslider_shortcode( $atts ) {
 
 	return $wpba_frontend->build_flexslider( $atts );
 } // wpba_flexslider_shortcode()
-add_shortcode( 'wpba-flexslider','wpba_flexslider_shortcode' );
+add_shortcode( 'wpba-flexslider', 'wpba_flexslider_shortcode' );

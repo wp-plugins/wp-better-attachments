@@ -1,41 +1,37 @@
 <?php
 /**
-* WP Better Attachments Settings
-*
-* @package WP_Better_Attachments
-*
-* @example http://kovshenin.com/2012/the-wordpress-settings-api/
-*
-* @package WP_Better_Attachments
-*/
+ * WP Better Attachments Settings
+ *
+ * @package WP_Better_Attachments
+ *
+ * @example http://kovshenin.com/2012/the-wordpress-settings-api/
+ *
+ * @package WP_Better_Attachments
+ */
 class WPBA_Settings extends WP_Better_Attachments
 {
-
 	/** @var WP_Settings_API_Bootstrap Class */
 	private $wp_settings_api;
 
 
-
 	/**
-	* Constructor
-	*/
-	function __construct()
-	{
+	 * Constructor
+	 */
+	function __construct() {
 		parent::__construct();
 		$this->wp_settings_api = new WP_Settings_API_Bootstrap();
-		add_action( 'admin_init', array( $this, 'admin_init') );
-		add_action( 'admin_menu', array( $this, 'admin_menu') );
+		add_action( 'admin_init', array( $this, 'admin_init' ) );
+		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 	} // __construct()
 
 
 
 	/**
-	* Initialize the settings on admin_init hook
-	*
-	* @return Void
-	*/
-	function admin_init()
-	{
+	 * Initialize the settings on admin_init hook
+	 *
+	 * @return Void
+	 */
+	function admin_init() {
 		//set the settings
 		$this->wp_settings_api->set_sections( $this->get_settings_sections() );
 		$this->wp_settings_api->set_fields( $this->get_settings_fields() );
@@ -47,16 +43,16 @@ class WPBA_Settings extends WP_Better_Attachments
 
 
 	/**
-	* Set up all of the Main settings sections
-	*
-	* @return array
-	*/
+	 * Set up all of the Main settings sections
+	 *
+	 * @return array
+	 */
 	function get_settings_sections() {
 		$sections = array(
 			array(
-				'id' => 'wpba_settings',
-				'title' => __( 'Settings', 'wpba' )
-			)
+				'id'    => 'wpba_settings',
+				'title' => __( 'Settings', 'wpba' ),
+			),
 		);
 		return $sections;
 	}
@@ -64,12 +60,11 @@ class WPBA_Settings extends WP_Better_Attachments
 
 
 	/**
-	* Add the menu on admin_menu hook
-	*
-	* @return  Void
-	*/
-	function admin_menu()
-	{
+	 * Add the menu on admin_menu hook
+	 *
+	 * @return  Void
+	 */
+	function admin_menu() {
 		add_options_page(
 			'WP Better Attachments Settings',
 			'WP Better Attachments',
@@ -82,25 +77,24 @@ class WPBA_Settings extends WP_Better_Attachments
 
 
 	/**
-	* Returns all the settings fields
-	*
-	* @return array settings fields
-	*/
-	function get_settings_fields()
-	{
+	 * Returns all the settings fields
+	 *
+	 * @return array settings fields
+	 */
+	function get_settings_fields() {
 		global $wpba_settings_fields;
-		$wpba_settings = array();
+		$wpba_settings   = array();
 		$wpba_settings[] = $wpba_settings_fields->get_post_type_disable_settings();
-		$wpba_settings = array_merge( $wpba_settings, $wpba_settings_fields->get_global_settings() );
+		$wpba_settings   = array_merge( $wpba_settings, $wpba_settings_fields->get_global_settings() );
 		$wpba_settings[] = $wpba_settings_fields->get_media_table_settings();
 		$wpba_settings[] = $wpba_settings_fields->get_metabox_settings();
 		$wpba_settings[] = $wpba_settings_fields->get_attachment_types();
 		$wpba_settings[] = $wpba_settings_fields->get_edit_modal_settings();
-		$wpba_settings = array_merge( $wpba_settings, $wpba_settings_fields->get_post_type_settings() );
+		$wpba_settings   = array_merge( $wpba_settings, $wpba_settings_fields->get_post_type_settings() );
 
 		// Settings
 		$settings_fields = array(
-			'wpba_settings' => $wpba_settings
+			'wpba_settings' => $wpba_settings,
 		);
 
 		return $settings_fields;
@@ -109,15 +103,14 @@ class WPBA_Settings extends WP_Better_Attachments
 
 
 	/**
-	* Display the admin page
-	*
-	* @return Void
-	*/
-	function plugin_page()
-	{?>
+	 * Display the admin page
+	 *
+	 * @return Void
+	 */
+	function plugin_page() {?>
 		<div class="wrap wpba wpba-loading">
 		<div id="icon-options-general" class="icon32"></div>
-		<h2>WP Better Attachments <?php echo WPBA_VERSION; ?> Settings</h2>
+		<h2>WP Better Attachments <?php echo esc_html( WPBA_VERSION ); ?> Settings</h2>
 		<div class="wpba-settings-content pull-left">
 		<?php
 		settings_errors( 'wpba-disable-post-types', false, true );
@@ -147,7 +140,7 @@ class WPBA_Settings extends WP_Better_Attachments
 				<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 			</p>
 			<p>
-				<a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode('http://wordpress.org/plugins/wp-better-attachments/'); ?>)" target="_blank" class="fb-share hide-text">Share on Facebook</a>
+				<a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode( 'http://wordpress.org/plugins/wp-better-attachments/' ); ?>)" target="_blank" class="fb-share hide-text">Share on Facebook</a>
 			</p>
 			<p>
 				<iframe src="http://ghbtns.com/github-btn.html?user=dholloran&repo=wp-better-attachments&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="75" height="20"></iframe>
@@ -166,7 +159,7 @@ class WPBA_Settings extends WP_Better_Attachments
 			<hr>
 			<p>If you want to hide this sidebar I understand, I develop client sites too just add this <code>.wpba-settings-sidebar{ display:none!important;}</code> to you administrator CSS.</p>
 			<hr>
-			<p>If you want to remove the menu item to prevent tampering with the plugin you can place this in your functions.php. You can still accces this page using this url <a href="<?php echo network_admin_url( 'options-general.php?page=wpba-settings' ); ?>"><?php echo network_admin_url( 'options-general.php?page=wpba-settings' ); ?></a></p>
+			<p>If you want to remove the menu item to prevent tampering with the plugin you can place this in your functions.php. You can still accces this page using this url <a href="<?php echo esc_url( network_admin_url( 'options-general.php?page=wpba-settings' ) ); ?>"><?php echo esc_url( network_admin_url( 'options-general.php?page=wpba-settings' ) ); ?></a></p>
 			<pre><code>add_action( 'admin_menu', 'wpba_remove_menu_pages' );
 				function wpba_remove_menu_pages() {
 				 remove_submenu_page(
@@ -182,19 +175,18 @@ class WPBA_Settings extends WP_Better_Attachments
 
 
 	/**
-	* Get all the pages
-	*
-	* @return array page names with key value pairs
-	*/
-	function get_pages()
-	{
+	 * Get all the pages
+	 *
+	 * @return array page names with key value pairs
+	 */
+	function get_pages() {
 		$pages = get_pages();
 		$pages_options = array();
 		if ( $pages )
-			foreach ($pages as $page)
+			foreach ( $pages as $page )
 				$pages_options[$page->ID] = $page->post_title;
 
-		return $pages_options;
+			return $pages_options;
 	} // get_pages()
 } // END Class WPBA_Settings()
 

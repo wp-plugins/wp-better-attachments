@@ -1,20 +1,19 @@
 <?php
 /**
-* WP Better Attachments
-*
-* @package WP_Better_Attachments
-* @since 1.0.0
-* @author Dan Holloran dan@danholloran.com
-*/
+ * WP Better Attachments
+ *
+ * @package WP_Better_Attachments
+ * @since 1.0.0
+ * @author Dan Holloran dan@danholloran.com
+ */
 class WPBA_Ajax extends WP_Better_Attachments
 {
 	/**
-	* Constructor
-	*
-	* @since 1.0.0
-	*/
-	public function __construct( $config = array() )
-	{
+	 * Constructor
+	 *
+	 * @since 1.0.0
+	 */
+	public function __construct( $config = array() ) {
 		parent::__construct();
 		$this->ajax_hooks();
 		$this->init_hooks();
@@ -23,27 +22,25 @@ class WPBA_Ajax extends WP_Better_Attachments
 
 
 	/**
-	* Initialization Hooks
-	*
-	* @since 1.0.0
-	*
-	* @return Void
-	*/
-	public function init_hooks()
-	{
+	 * Initialization Hooks
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return Void
+	 */
+	public function init_hooks() {
 	} // init_hooks()
 
 
 
 	/**
-	* AJAX Hooks
-	*
-	* @since 1.0.0
-	*
-	* @return Void
-	*/
-	public function ajax_hooks()
-	{
+	 * AJAX Hooks
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return Void
+	 */
+	public function ajax_hooks() {
 		add_action( 'wp_ajax_wpba_update_sort_order', array( &$this, 'update_sort_order_callback' ) );
 		add_action( 'wp_ajax_wpba_unattach_attachment', array( &$this, 'unattach_attachment_callback' ) );
 		add_action( 'wp_ajax_wpba_add_attachment', array( &$this, 'add_attachment_callback' ) );
@@ -51,19 +48,20 @@ class WPBA_Ajax extends WP_Better_Attachments
 		add_action( 'wp_ajax_wpba_delete_attachment', array( &$this, 'delete_attachment_callback' ) );
 		add_action( 'wp_ajax_wpba_refresh_attachments', array( &$this, 'refresh_attachments_callback' ) );
 		add_action( 'wp_ajax_wpba_update_post', array( &$this, 'update_post_callback' ) );
-		add_action('wp_ajax_wpba_image_area_select', array( &$this, 'image_area_select_callback' ) );
+		add_action( 'wp_ajax_wpba_image_area_select', array( &$this, 'image_area_select_callback' ) );
+		add_action( 'wp_ajax_wpba_add_external_attachment', array( &$this, 'add_external_attachment_callback' ) );
 	} // ajax_hooks()
 
 
 
 	/**
-	* AJAX Update Sort Order
-	*
-	* @since 1.0.0
-	* @return Void
-	*/
-	public function update_sort_order_callback()
-	{
+	 * AJAX Update Sort Order
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return Void
+	 */
+	public function update_sort_order_callback() {
 		extract( $_POST );
 
 		// Check for empty values
@@ -95,14 +93,13 @@ class WPBA_Ajax extends WP_Better_Attachments
 
 
 	/**
-	* AJAX Unattach Image
-	*
-	* @since 1.0.0
-	*
-	* @return Void
-	*/
-	public function unattach_attachment_callback()
-	{
+	 * AJAX Unattach Image
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return Void
+	 */
+	public function unattach_attachment_callback() {
 		extract( $_POST );
 
 		if ( !isset( $attachmentid ) ) {
@@ -116,17 +113,18 @@ class WPBA_Ajax extends WP_Better_Attachments
 	} // unattach_attachment_callback()
 
 
+
 	/**
-	* AJAX Add Attachment
-	*
-	* @return Void
-	* @since 1.0.0
-	*/
-	public function add_attachment_callback()
-	{
+	 * AJAX Add Attachment
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return Void
+	 */
+	public function add_attachment_callback() {
 		extract( $_POST );
 		$args = array(
-			'post' => get_post( $parentid )
+			'post' => get_post( $parentid ),
 		);
 		$current_attachments = $this->get_post_attachments( $args );
 
@@ -149,33 +147,94 @@ class WPBA_Ajax extends WP_Better_Attachments
 
 		// Add new attachments
 		foreach ( $attachments as $attachment ) {
-			$this->attach( array(
-					'media'   => $attachment['id'],
-					'parent_id' => $parentid
-				) );
+			$this->attach(
+				array(
+					'media'     => $attachment['id'],
+					'parent_id' => $parentid,
+				)
+		);
 		} // foreach
 
 		global $wpba_meta_box;
 		$image_html = $wpba_meta_box->build_image_attachment_li( $attachments, array( 'a_array' => true ) );
 
-		echo json_encode( array(
-			'image' => $image_html
-		));
+		echo json_encode(
+			array(
+				'image' => $image_html,
+			)
+		);
 		die();
 	} // add_attachment_callback()
 
 
+
 	/**
-	* AJAX Add Attachment - Old Media Uploader
-	*
-	* @return Void
-	* @since 1.0.0
-	*/
-	public function add_attachment_old_callback()
-	{
+	 * AJAX Add External  Attachment
+	 *
+	 * @since 1.3.8
+	 *
+	 * @return Void
+	 */
+	public function add_external_attachment_callback() {
+		extract( $_POST );
+		// $attachment_data['link']
+		// $attachment_data['title']
+		// $attachment_data['type']
+		// $parentid
+
+		global $wpba;
+
+		$args = array(
+			'post' => get_post( $parentid ),
+		);
+
+		// Make sure we have something to work with
+		if ( ! isset( $parentid ) ) {
+			echo json_encode( false );
+			die();
+		} // if()
+
+		// Add new attachments
+		$attachments = array();
+		foreach ( $attachment_data as $data ) {
+			extract( $data );
+			$attachments['id'] = $wpba->add_external_attachment( $link, $title, $type );
+			$this->attach(
+				array(
+					'media'     => $attachments['id'],
+					'parent_id' => $parentid,
+					'external'  => $external,
+				)
+			);
+		} // foreach()
+
+		global $wpba_meta_box;
+		$image_html = $wpba_meta_box->build_image_attachment_li( $attachments, array( 'a_array' => true ) );
+
+		echo json_encode(
+			array(
+				'image' => $image_html,
+			)
+		);
+		die();
+	} // add_external_attachment_callback()
+
+
+
+	/**
+	 * AJAX Add Attachment - Old Media Uploader
+	 *
+	 * @deprecated The old media uploader is no longer in use
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return Void
+	 *
+	 */
+	public function add_attachment_old_callback() {
 		extract( $_POST );
 		$args = array(
-			'post' => get_post( $parentid )
+			'post' => get_post( $parentid ),
 		);
 		$current_attachments = $this->get_post_attachments( $args );
 
@@ -185,7 +244,7 @@ class WPBA_Ajax extends WP_Better_Attachments
 			die();
 		} // if()
 		$attachments = array(
-			array( 'id' => $this->get_attachment_id_from_src( $attachmenturl ) )
+			array( 'id' => $this->get_attachment_id_from_src( $attachmenturl ) ),
 		);
 
 		// Make sure the attachment doesn't already exist
@@ -200,10 +259,12 @@ class WPBA_Ajax extends WP_Better_Attachments
 
 		// Add new attachments
 		foreach ( $attachments as $attachment ) {
-			$this->attach( array(
-					'media'   => $attachment['id'],
-					'parent_id' => $parentid
-				) );
+			$this->attach(
+				array(
+					'media'     => $attachment['id'],
+					'parent_id' => $parentid,
+				)
+			);
 		} // foreach
 
 		global $wpba_meta_box;
@@ -214,11 +275,15 @@ class WPBA_Ajax extends WP_Better_Attachments
 	} // add_attachment_old_callback()
 
 
+
 	/**
-	* AJAX Update Sort Order
-	*/
-	public function delete_attachment_callback()
-	{
+	 * AJAX Update Sort Order
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return Void
+	 */
+	public function delete_attachment_callback() {
 		extract( $_POST );
 		// Make sure we have something to work with
 		if ( !isset( $attachmentid ) ) {
@@ -236,14 +301,15 @@ class WPBA_Ajax extends WP_Better_Attachments
 	} // delete_attachment_callback()
 
 
+
 	/**
-	* AJAX Refresh Attachments
-	*
-	* @return Void
-	* @since 1.0.0
-	*/
-	public function refresh_attachments_callback()
-	{
+	 * AJAX Refresh Attachments
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return Void
+	 */
+	public function refresh_attachments_callback() {
 		global $wpba_meta_box;
 		extract( $_GET );
 
@@ -261,14 +327,17 @@ class WPBA_Ajax extends WP_Better_Attachments
 	} // refresh_attachments_callback()
 
 
+
 	/**
-	* Update Post
-	*
-	* @return Void
-	* @since 1.0.0
-	*/
-	public function update_post_callback()
-	{
+	 * Update Post
+	 *
+	 * @since 1.0.0
+	 *
+	 * @deprecated This was never really used.
+	 *
+	 * @return Void
+	 */
+	public function update_post_callback() {
 		extract( $_POST );
 		$my_post = array();
 		$my_post['ID'] = $id;
@@ -280,14 +349,15 @@ class WPBA_Ajax extends WP_Better_Attachments
 	} //update_post_callback()
 
 
+
 	/**
-	* Image Area Select
-	*
-	* @return Void
-	* @since 1.0.0
-	*/
-	public function image_area_select_callback()
-	{
+	 * Image Area Select
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return Void
+	 */
+	public function image_area_select_callback() {
 		extract( $_POST );
 		global $wpba_crop_resize;
 		$resize_crop_selection = $wpba_crop_resize->resize_crop_selection();
@@ -297,10 +367,10 @@ class WPBA_Ajax extends WP_Better_Attachments
 			$crop_points = ( $attachment_meta ) ? $attachment_meta : array();
 			$crop_key = "{$final_w}x{$final_h}";
 			$crop_points[$crop_key] = array(
-				'x1'	=>	$src_x,
-				'x2' 	=>	$src_x + $final_w,
-				'y1'	=>	$src_y,
-				'y2'	=>	$src_h
+				'x1' => $src_x,
+				'x2'  => $src_x + $final_w,
+				'y1' => $src_y,
+				'y2' => $src_h,
 			);
 			update_post_meta( $id, 'wpba_crop_points', $crop_points );
 		} // if()
@@ -309,14 +379,14 @@ class WPBA_Ajax extends WP_Better_Attachments
 	} // image_area_select_callback()
 } // END Class WPBA_Ajax()
 
-	/**
-	* Instantiate class and create return method for easier use later
-	*/
+/**
+ * Instantiate class and create return method for easier use later
+ */
 global $wpba_ajax;
 $wpba_ajax = new WPBA_Ajax();
 
-function call_WPBA_Ajax() {
+function call_wpba_ajax() {
 	return new WPBA_Ajax();
-} // call_WPBA_Ajax()
+} // call_wpba_ajax()
 if ( is_admin() )
-	add_action( 'load-post.php', 'call_WPBA_Ajax' );
+	add_action( 'load-post.php', 'call_wpba_ajax' );
