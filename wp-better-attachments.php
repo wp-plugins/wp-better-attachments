@@ -40,7 +40,7 @@ if ( !function_exists( 'pp' ) and $_SERVER['HTTP_HOST'] == 'localhost' ) {
 /**
  * Composer AutoLoad
  */
-require_once 'vendor/autoload.php';
+// require_once 'vendor/autoload.php';
 
 
 /**
